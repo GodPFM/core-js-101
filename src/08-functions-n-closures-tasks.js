@@ -24,7 +24,7 @@
  *
  */
 function getComposition(f, g) {
-  return function (value) {
+  return function next(value) {
     return f(g(value));
   };
 }
@@ -48,7 +48,7 @@ function getComposition(f, g) {
  */
 function getPowerFunction(exponent) {
   const exp = exponent;
-  return function (value) {
+  return function multiply(value) {
     return value ** exp;
   };
 }
