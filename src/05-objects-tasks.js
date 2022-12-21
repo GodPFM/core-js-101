@@ -112,34 +112,111 @@ function fromJSON(proto, json) {
  *
  *  For more examples see unit tests.
  */
+class CssBuilder {
+  constructor(string) {
+    this.str = string;
+    this.elementCount = 1;
+  }
+
+  element() {
+    if (this.str.match(/#/)) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.elementCount += 1;
+    if (this.elementCount > 1) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+  }
+
+  id(value) {
+    if (this.str.includes('#')) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    if (this.str.match(/[.:#]/)) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.str += `#${value}`;
+    return this;
+  }
+
+  class(value) {
+    if (this.str.includes('[')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.str += `.${value}`;
+    return this;
+  }
+
+  attr(value) {
+    if (this.str.includes(':')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.str += `[${value}]`;
+    return this;
+  }
+
+  pseudoClass(value) {
+    if (this.str.includes('::')) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this.str += `:${value}`;
+    return this;
+  }
+
+  pseudoElement(value) {
+    if (this.str.includes('::')) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    this.str += `::${value}`;
+    return this;
+  }
+
+  stringify() {
+    const toReturn = this.str;
+    this.elementCount = 0;
+    this.str = '';
+    return toReturn;
+  }
+}
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  result: '',
+
+  element(value) {
+    return new CssBuilder(value);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    return new CssBuilder(`#${value}`);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new CssBuilder(`.${value}`);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new CssBuilder(`[${value}]`);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new CssBuilder(`:${value}`);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    return new CssBuilder(`::${value}`);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    const resultFirst = selector1.stringify();
+    const resultSecond = selector2.stringify();
+    this.result = `${resultFirst} ${combinator} ${resultSecond}`;
+    return this;
+  },
+
+  stringify() {
+    const toReturn = this.result;
+    this.result = '';
+    return toReturn;
   },
 };
 
