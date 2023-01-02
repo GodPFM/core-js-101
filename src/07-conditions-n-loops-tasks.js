@@ -352,8 +352,34 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const array = [];
+  for (let i = 0; i < str.length; i += 1) {
+    if (str[i] === '<' || str[i] === '[' || str[i] === '{' || str[i] === '(') {
+      array.push(str[i]);
+    }
+    if (str[i] === '>') {
+      if (array.pop() !== '<') {
+        return false;
+      }
+    }
+    if (str[i] === ']') {
+      if (array.pop() !== '[') {
+        return false;
+      }
+    }
+    if (str[i] === '}') {
+      if (array.pop() !== '{') {
+        return false;
+      }
+    }
+    if (str[i] === ')') {
+      if (array.pop() !== '(') {
+        return false;
+      }
+    }
+  }
+  return array.length === 0;
 }
 
 
@@ -442,8 +468,18 @@ function getCommonDirectoryPath(pathes) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const array = new Array(m1.length);
+  for (let i = 0; i < m1.length; i += 1) {
+    array[i] = new Array(m2[0].length);
+    for (let j = 0; j < m2[0].length; j += 1) {
+      array[i][j] = 0;
+      for (let k = 0; k < m1[0].length; k += 1) {
+        array[i][j] += m1[i][k] * m2[k][j];
+      }
+    }
+  }
+  return array;
 }
 
 
@@ -477,8 +513,79 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  for (let i = 0; i < position.length; i += 1) {
+    for (let j = 0; j < position[0].length; j += 1) {
+      if (position[i][j] !== undefined) {
+        const value = position[i][j];
+        let count = 1;
+        let checkValue = null;
+        if (i !== 2) {
+          checkValue = position[i + 1][j];
+        }
+        while (checkValue === value && i === 0) {
+          count += 1;
+          if (i + count === 3) {
+            break;
+          }
+          checkValue = position[i + count][j];
+          if (count === 3) {
+            return value;
+          }
+        }
+        if (count === 3) {
+          return value;
+        }
+        count = 1;
+        checkValue = null;
+        if (j !== 2) {
+          checkValue = position[i][j + 1];
+        }
+        while (checkValue === value && j === 0) {
+          count += 1;
+          if (j + count === 3) {
+            break;
+          }
+          checkValue = position[i][j + count];
+        }
+        if (count === 3) {
+          return value;
+        }
+        count = 1;
+        checkValue = null;
+        if (i !== 2) {
+          checkValue = position[i + 1][j + 1];
+        }
+        while (checkValue === value && i === 0 && j === 0) {
+          count += 1;
+          if (j + count === 3) {
+            break;
+          }
+          checkValue = position[i + count][j + count];
+        }
+        if (count === 3) {
+          return value;
+        }
+
+        count = 1;
+        checkValue = null;
+        if (j !== 0 && i !== 2) {
+          checkValue = position[i + 1][j - 1];
+        }
+        while (checkValue === value && i === 0 && j === 2) {
+          count += 1;
+          if (j - count === -1) {
+            break;
+          }
+          checkValue = position[i + count][j - count];
+        }
+        if (count === 3) {
+          return value;
+        }
+      }
+    }
+  }
+  return undefined;
 }
 
 
